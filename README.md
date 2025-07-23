@@ -1,5 +1,5 @@
 # KnowItAll Quiz App
-#### Video Demo: [KnowItAll demo](my.url.com/video_of_app)
+#### Video Demo: [KnowItAll demo](https://www.youtube.com/watch?v=f2K52TL0gOk&ab_channel=David)
 ### Description:
 Hi, my name is David and for my last project for CS50P I decided to make a quiz app. It is called KnowItAll.
 
