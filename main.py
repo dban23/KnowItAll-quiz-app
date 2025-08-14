@@ -6,17 +6,21 @@ from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.core.window import Window
+from kivy.utils import platform
 import requests
 import random
 import html
 from pyfiglet import Figlet
 
-Window.size = (800, 600)
+Window.maximize()
 
 # colors used in the app
 white = (0.949, 0.957, 0.988, 1)
 blue = (0.502, 0.580, 0.867, 1)
 green = (0.000, 0.592, 0.459, 1)
+
+w = Window.width
+h = Window.height
 
 
 def main():
@@ -69,19 +73,29 @@ class Quiz_welcome(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.image = Image(
-            source="KNOWITALL.png", size_hint=(1, 0.4), height=300, pos_hint={"top": 1}
+        layout = BoxLayout(
+            orientation="vertical", spacing=h * 0.02, padding=[40, 0, 40, 40]
         )
+
+        self.image = Image(
+            source="KNOWITALL.png",
+            size_hint=(1, None),
+            height=h * 0.3,
+            allow_stretch=True,
+            keep_ratio=True,
+        )
+
+        self.spacer = Label(size_hint=(1, None), height=h * 0.15)
 
         self.label = Label(
             text="Select category",
-            font_size=Window.height * 0.04,
+            font_size=self.get_font_size(),
             color=green,
             size_hint=(1, None),
-            height=50,
-            pos_hint={"top": 0.65},
+            height=h * 0.2,
+            # pos_hint={"top": 0.65},
             halign="center",
-            valign="middle",
+            # valign="middle",
         )
 
         grid = GridLayout(
@@ -89,8 +103,7 @@ class Quiz_welcome(Screen):
             spacing=10,
             padding=20,
             size_hint=(0.8, 0.1),
-            size=(600, 100),
-            pos_hint={"top": 0.6, "center_x": 0.5},
+            pos_hint={"center_x": 0.5},
         )
 
         self.categories = {
@@ -103,7 +116,7 @@ class Quiz_welcome(Screen):
         for category in self.categories:
             cat_button = Button(
                 text=category,
-                font_size=30,
+                font_size=self.get_font_size(),
                 background_normal="",
                 background_color=blue,
                 on_press=self.on_cat_click,
@@ -112,28 +125,42 @@ class Quiz_welcome(Screen):
 
         self.start_button = Button(
             text="Start quiz",
-            font_size=40,
+            font_size=self.get_font_size(),
             size_hint=(0.3, 0.12),
-            size=(200, 110),
-            pos_hint={"top": 0.4, "center_x": 0.5},
+            pos_hint={"center_x": 0.5},
             background_normal="",
             background_color=green,
             bold=True,
             on_release=self.to_next_screen,
         )
 
-        self.add_widget(self.image)
-        self.add_widget(self.label)
+        layout.add_widget(self.image)
+        layout.add_widget(self.label)
+        layout.add_widget(grid)
+        layout.add_widget(self.spacer)
+        layout.add_widget(self.start_button)
+
+        self.add_widget(layout)
         self.label.bind(size=self.label.setter("text_size"))
         Window.bind(
             size=lambda instance, value: setattr(
-                self.label, "font_size", Window.height * 0.04
+                self.label, "font_size", self.get_font_size()
             )
         )
-        self.add_widget(grid)
-        self.add_widget(self.start_button)
 
         self.number_of_questions = 10
+
+    def get_font_size(self):
+        if platform == "android":
+            return w * 0.05
+        else:
+            return w * 0.04
+
+    def get_button_size(self):
+        if platform == "android":
+            return (w * 0.2, h * 0.1)
+        else:
+            return (w * 0.15, h * 0.08)
 
     def on_cat_click(self, instance):
         selected = instance.text
@@ -166,7 +193,6 @@ class Quiz_questions(Screen):
             spacing=50,
             padding=30,
             size_hint=(0.8, 0.2),
-            size=(600, 100),
             pos_hint={"top": 0.5, "center_x": 0.5},
         )
 
@@ -183,7 +209,7 @@ class Quiz_questions(Screen):
 
         self.ques_num = Label(
             text=f"Question {self.current_index + 1}",
-            font_size=Window.height * 0.05,
+            font_size=h * 0.05,
             color=green,
             size_hint=(1, 0.01),
             height=20,
@@ -195,7 +221,7 @@ class Quiz_questions(Screen):
 
         self.question = Label(
             text=self.current_question,
-            font_size=Window.height * 0.04,
+            font_size=h * 0.04,
             color=blue,
             size_hint=(1, 0.2),
             height=50,
