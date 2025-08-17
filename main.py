@@ -7,6 +7,7 @@ from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.core.window import Window
 from kivy.utils import platform
+from kivy.clock import Clock
 import requests
 import random
 import html
@@ -18,6 +19,8 @@ Window.maximize()
 white = (0.949, 0.957, 0.988, 1)
 blue = (0.502, 0.580, 0.867, 1)
 green = (0.000, 0.592, 0.459, 1)
+red = (0.957, 0.263, 0.212, 1)
+light_green = (0.565, 0.933, 0.565, 1)
 
 w = Window.width
 h = Window.height
@@ -258,42 +261,54 @@ class Quiz_questions(Screen):
 
     def answer_clicked(self, instance):
         self.welcome_screen = self.manager.get_screen("Welcome screen")
-        # if answer is correct do something
+
         if instance.text == self.current_question_data["correct_answer"]:
             self.total_points += 1
-
+            instance.background_color = light_green
+        elif instance.text != self.current_question_data["correct_answer"]:
+            instance.background_color = red
+            
+            
         self.current_index += 1
-        if self.current_index >= len(self.welcome_screen.questions_data):
-            self.master.remove_widget(self.q_grid)
-            self.master.remove_widget(self.ques_num)
-            self.question.text = f"Your total score is {self.total_points}/10!"
-            self.play_again = Button(
-                text="Play again",
-                font_size=30,
-                background_normal="",
-                background_color=green,
-                size_hint=(0.4, 0.05),
-                height=100,
-                pos_hint={"top": 0.45, "center_x": 0.5},
-                bold=True,
-                on_release=self.restart_game,
-            )
-            self.master.add_widget(self.play_again)
-            return
-        else:
-            # fetching new data for new questions
-            self.current_question_data = fix_encoding(
-                self.welcome_screen.questions_data[self.current_index]
-            )
-            self.current_question = fix_encoding(self.current_question_data["question"])
-            self.current_answers = self.current_question_data["answers"]
 
-            # updating text for every widget on the page with the current question data
-            for i in range(4):
-                answer = self.current_answers[i]
-                self.answer_buttons[i].text = fix_encoding(answer)
-            self.question.text = self.current_question
-            self.ques_num.text = f"Question {self.current_index + 1}"
+        def next_question(dt):
+            if self.current_index >= len(self.welcome_screen.questions_data):
+                self.master.remove_widget(self.q_grid)
+                self.master.remove_widget(self.ques_num)
+                self.question.text = f"Your total score is {self.total_points}/10!"
+                self.play_again = Button(
+                    text="Play again",
+                    font_size=30,
+                    background_normal="",
+                    background_color=green,
+                    size_hint=(0.4, 0.05),
+                    height=100,
+                    pos_hint={"top": 0.45, "center_x": 0.5},
+                    bold=True,
+                    on_release=self.restart_game,
+                )
+                self.master.add_widget(self.play_again)
+                return
+            else:
+                # fetching new data for new questions
+                self.current_question_data = fix_encoding(
+                    self.welcome_screen.questions_data[self.current_index]
+                )
+                self.current_question = fix_encoding(
+                    self.current_question_data["question"]
+                )
+                self.current_answers = self.current_question_data["answers"]
+
+                # updating text for every widget on the page with the current question data
+                for i in range(4):
+                    answer = self.current_answers[i]
+                    self.answer_buttons[i].text = fix_encoding(answer)
+                self.question.text = self.current_question
+                self.ques_num.text = f"Question {self.current_index + 1}"
+                for btn in self.answer_buttons:
+                    btn.background_color = green
+
+        Clock.schedule_once(next_question, 1)
 
     def restart_game(self, instance):
         self.total_points = 0
