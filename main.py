@@ -262,13 +262,17 @@ class Quiz_questions(Screen):
     def answer_clicked(self, instance):
         self.welcome_screen = self.manager.get_screen("Welcome screen")
 
-        if instance.text == self.current_question_data["correct_answer"]:
+        correct_answer = self.current_question_data["correct_answer"]
+
+        if instance.text == correct_answer:
             self.total_points += 1
             instance.background_color = light_green
-        elif instance.text != self.current_question_data["correct_answer"]:
+        elif instance.text != correct_answer:
             instance.background_color = red
-            
-            
+            for btn in self.answer_buttons:
+                if btn.text == correct_answer:
+                    btn.background_color = light_green
+
         self.current_index += 1
 
         def next_question(dt):
@@ -316,6 +320,7 @@ class Quiz_questions(Screen):
         self.answer_buttons = []
         self.master.clear_widgets()
         self.q_grid.clear_widgets()
+        self.welcome_screen.start_button.text = "Start quiz"
         self.manager.current = "Welcome screen"
 
 
