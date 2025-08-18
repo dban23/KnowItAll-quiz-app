@@ -8,6 +8,7 @@ from kivy.uix.button import Button
 from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.clock import Clock
+from datetime import datetime, timedelta
 import requests
 import random
 import html
@@ -171,7 +172,17 @@ class Quiz_welcome(Screen):
         self.start_button.size_hint = (0.4, 0.12)
         # save the category code so I can use it in the API
         self.selected_category_code = self.categories[selected]
-        self.token = get_token()
+
+        # check if token already exists and if it's older than 6 hours
+        if hasattr(self, "token") and hasattr(self, "token_time"):
+            time_of_check = datetime.now()
+            token_age = time_of_check - self.token_time
+            if token_age > timedelta(hours=6):
+                self.token = get_token()
+                self.token_time = datetime.now()
+        else:
+            self.token = get_token()
+            self.token_time = datetime.now()
 
     def to_next_screen(self, instance):
         questions_screen = self.manager.get_screen("Questions screen")
