@@ -36,6 +36,18 @@ def get_token():
     token_response = requests.get(token_url, timeout=10)
     return token_response.json()["token"]
 
+def check_token():
+    # check if token already exists and if it's older than 6 hours
+    if hasattr(self, "token") and hasattr(self, "token_time"):
+        time_of_check = datetime.now()
+        token_age = time_of_check - self.token_time
+        if token_age > timedelta(hours=6):
+            self.token = get_token()
+            self.token_time = datetime.now()
+    else:
+        self.token = get_token()
+        self.token_time = datetime.now()
+
 
 def get_questions(number_of_questions, category, token):
     questions_url = f"https://opentdb.com/api.php?amount={number_of_questions}&category={category}&type=multiple&token={token}"
@@ -164,17 +176,7 @@ class Quiz_welcome(Screen):
         self.start_button.size_hint = (0.4, 0.12)
         # save the category code so I can use it in the API
         self.selected_category_code = self.categories[selected]
-
-        # check if token already exists and if it's older than 6 hours
-        if hasattr(self, "token") and hasattr(self, "token_time"):
-            time_of_check = datetime.now()
-            token_age = time_of_check - self.token_time
-            if token_age > timedelta(hours=6):
-                self.token = get_token()
-                self.token_time = datetime.now()
-        else:
-            self.token = get_token()
-            self.token_time = datetime.now()
+        check_token()
 
     def to_next_screen(self, instance):
         questions_screen = self.manager.get_screen("Questions screen")
