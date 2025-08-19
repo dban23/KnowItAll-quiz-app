@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 import requests
 import random
 import html
-from pyfiglet import Figlet
 
 Window.maximize()
 
@@ -28,13 +27,6 @@ h = Window.height
 
 
 def main():
-    figlet = Figlet()
-
-    figlet.setFont(font="larry3d")
-    text = "KnowItAll"
-
-    print(figlet.renderText(text))
-
     QuizApp().run()
 
 
