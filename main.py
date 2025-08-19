@@ -215,10 +215,10 @@ class Quiz_questions(Screen):
 
         self.ques_num = Label(
             text=f"Question {self.current_index + 1}",
-            font_size=h * 0.05,
+            font_size=self.welcome_screen.get_font_size(),
             color=green,
             size_hint=(1, 0.01),
-            height=20,
+            #height=h*0.2,
             pos_hint={"top": 0.9, "center_x": 0.5},
             halign="center",
             valign="middle",
@@ -227,10 +227,10 @@ class Quiz_questions(Screen):
 
         self.question = Label(
             text=self.current_question,
-            font_size=h * 0.04,
+            font_size=self.welcome_screen.get_font_size(),
             color=blue,
             size_hint=(1, 0.2),
-            height=50,
+            #height=h*0.2,
             pos_hint={"top": 0.8, "center_x": 0.5},
             halign="center",
             valign="middle",
@@ -285,11 +285,11 @@ class Quiz_questions(Screen):
                 self.question.text = f"Your total score is {self.total_points}/10!"
                 self.play_again = Button(
                     text="Play again",
-                    font_size=30,
+                    font_size=self.welcome_screen.get_font_size(),
                     background_normal="",
                     background_color=green,
                     size_hint=(0.4, 0.05),
-                    height=100,
+                    #height=100,
                     pos_hint={"top": 0.45, "center_x": 0.5},
                     bold=True,
                     on_release=self.restart_game,
@@ -315,7 +315,7 @@ class Quiz_questions(Screen):
                 for btn in self.answer_buttons:
                     btn.background_color = green
 
-        Clock.schedule_once(next_question, 1)
+        Clock.schedule_once(next_question, 0.8)
 
     def restart_game(self, instance):
         self.total_points = 0
