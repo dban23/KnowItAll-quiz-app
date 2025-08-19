@@ -33,13 +33,13 @@ def main():
 def get_token():
     # retrieve token and use it in a requests so that no questions are repeated
     token_url = "https://opentdb.com/api_token.php?command=request"
-    token_response = requests.get(token_url)
+    token_response = requests.get(token_url, timeout=10)
     return token_response.json()["token"]
 
 
 def get_questions(number_of_questions, category, token):
     questions_url = f"https://opentdb.com/api.php?amount={number_of_questions}&category={category}&type=multiple&token={token}"
-    response = requests.get(questions_url)
+    response = requests.get(questions_url, timeout=10)
     question_response = response.json()
 
     questions_data = []
@@ -60,8 +60,8 @@ def get_questions(number_of_questions, category, token):
 
 
 def fix_encoding(response):
-    user_friendly_output = html.unescape(response)
-    return user_friendly_output
+    return html.unescape(response)
+
 
 
 # Configure the first welcome screen of the app
