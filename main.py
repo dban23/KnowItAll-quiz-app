@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import requests
 import random
 import html
+import threading
 
 Window.maximize()
 
@@ -75,6 +76,8 @@ def fix_encoding(response):
     return html.unescape(response)
 
 
+get_questions_thread = threading.Thread(target=get_token)
+check_token_thread = threading.Thread(target=check_token)
 
 # Configure the first welcome screen of the app
 class Quiz_welcome(Screen):
@@ -174,9 +177,12 @@ class Quiz_welcome(Screen):
         selected = instance.text
         self.start_button.text = f"Start quiz on {selected}"
         self.start_button.size_hint = (0.4, 0.12)
-        # save the category code so I can use it in the API
+        
+        :# save the category code so I can use it in the API
         self.selected_category_code = self.categories[selected]
-        check_token()
+        
+        # fetch token in the background thread
+        check_token_thread.start()
 
     def to_next_screen(self, instance):
         questions_screen = self.manager.get_screen("Questions screen")
