@@ -37,19 +37,6 @@ def get_token():
     token_response = requests.get(token_url, timeout=10)
     return token_response.json()["token"]
 
-def check_token():
-    # check if token already exists and if it's older than 6 hours
-    if hasattr(self, "token") and hasattr(self, "token_time"):
-        time_of_check = datetime.now()
-        token_age = time_of_check - self.token_time
-        if token_age > timedelta(hours=6):
-            self.token = get_token()
-            self.token_time = datetime.now()
-    else:
-        self.token = get_token()
-        self.token_time = datetime.now()
-
-
 def get_questions(number_of_questions, category, token):
     questions_url = f"https://opentdb.com/api.php?amount={number_of_questions}&category={category}&type=multiple&token={token}"
     response = requests.get(questions_url, timeout=10)
@@ -75,9 +62,6 @@ def get_questions(number_of_questions, category, token):
 def fix_encoding(response):
     return html.unescape(response)
 
-
-get_questions_thread = threading.Thread(target=get_token)
-check_token_thread = threading.Thread(target=check_token)
 
 # Configure the first welcome screen of the app
 class Quiz_welcome(Screen):
@@ -177,21 +161,43 @@ class Quiz_welcome(Screen):
         selected = instance.text
         self.start_button.text = f"Start quiz on {selected}"
         self.start_button.size_hint = (0.4, 0.12)
-        
-        :# save the category code so I can use it in the API
+    
+        # check if token already exists and if it's older than 6 hours
+        def check_token():
+            if hasattr(self, "token") and hasattr(self, "token_time"):
+                time_of_check = datetime.now()
+                token_age = time_of_check - self.token_time
+                if token_age > timedelta(hours=6):
+                    self.token = get_token()
+                    self.token_time = datetime.now()
+            else:
+                self.token = get_token()
+                self.token_time = datetime.now()
+
+        # save the category code so I can use it in the API
         self.selected_category_code = self.categories[selected]
         
         # fetch token in the background thread
-        check_token_thread.start()
+        threading.Thread(target=check_token).start()
 
     def to_next_screen(self, instance):
-        questions_screen = self.manager.get_screen("Questions screen")
-        # call an API to fetch questions before switching screens
-        self.questions_data = get_questions(
-            self.number_of_questions, self.selected_category_code, self.token
-        )
-        questions_screen.build_ui()
-        self.manager.current = "Questions screen"
+        if not hasattr(self, "token"):
+            return
+
+        def fetch_questions():
+            # call an API to fetch questions before switching screens
+            self.questions_data = get_questions(
+                self.number_of_questions, self.selected_category_code, self.token
+            )
+
+            def call_build_ui(dt):
+                questions_screen = self.manager.get_screen("Questions screen")
+                questions_screen.build_ui()
+                self.manager.current = "Questions screen"
+
+            Clock.schedule_once(call_build_ui)
+
+        threading.Thread(target=fetch_questions).start()
 
 
 # Configure second screen of the app where the questions are shown
