@@ -166,13 +166,16 @@ class Quiz_welcome(Screen):
         def check_token():
             if hasattr(self, "token") and hasattr(self, "token_time"):
                 time_of_check = datetime.now()
-                token_age = time_of_check - self.token_time
+                token_age = time_of_check - token_time
                 if token_age > timedelta(hours=6):
-                    self.token = get_token()
-                    self.token_time = datetime.now()
+                    token = get_token()
+                    token_time = datetime.now()
             else:
-                self.token = get_token()
-                self.token_time = datetime.now()
+                token = get_token()
+                token_time = datetime.now()
+            
+            Clock.schedule_once(lambda dt: setattr(self, "token", token))
+            Clock.schedule_once(lambda dt: setattr(self, "token_time", token_time))
 
         # save the category code so I can use it in the API
         self.selected_category_code = self.categories[selected]
