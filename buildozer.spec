@@ -15,27 +15,27 @@ package.name = knowitall
 package.domain = org.dban.knowitall
 
 # (str) Source code where the main.py live
-source.dir = .
+source.dir = app
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png
 
 # (list) List of inclusions using pattern matching
-#source.include_patterns = assets/*,images/*.png
+source.include_patterns = *.png
 
 # (list) Source files to exclude (let empty to not exclude anything)
-#source.exclude_exts = spec,mp4,txt
+source.exclude_exts = mp4,txt
 
 # (list) List of directory to exclude (let empty to not exclude anything)
 # source.exclude_dirs = */lib2to3/tests/*,tests,bin,venv
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
-#source.exclude_patterns = Lib/lib2to3/tests/*,tests/*,*/tests/*,*/test_*.py
+source.exclude_patterns = *.mp4, *.zip, *.tar, *.tgz, *.wav, *.ogg, *.ttf, *.pdf, *.bmp, *.webp, *.pyc, __pycache__/, .pytest_cache/, .idea/, venv39/, Python-3.9.19/, android-ndk-r26c-linux/, *.so
 #license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1
+version = 1.0
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -43,17 +43,17 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3==3.9.19,hostpython3==3.9.19,kivy==2.2.1,requests,pyfiglet,pyjnius,cython
+requirements = python3==3.9.19,hostpython3==3.9.19,kivy==2.2.1,requests,pyjnius,cython
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = presplash.png
+presplash.filename = app/presplash.png
 
 # (str) Icon of the application
-icon.filename = icon.png
+icon.filename = app/icon.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
@@ -107,10 +107,10 @@ android.permissions = INTERNET
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-#android.api = 31
+android.api = 34
 
 # (int) Minimum API your APK / AAB will support.
-#android.minapi = 21
+android.minapi = 34
 
 # (int) Android SDK version to use
 #android.sdk = 20
@@ -119,13 +119,19 @@ android.permissions = INTERNET
 #android.ndk = 23b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
-#android.ndk_api = 21
+android.ndk_api = 34
+
+android.exclude_patterns = */third_party/googletest/scripts/*, *.md, *.txt, *.pyc, __pycache__/, *.zip, *.mp4
+
+# c and c++ flags so that the warning is silenced
+android.cflags = -Wno-cast-function-type -Wno-cast-function-type-strict -Wno-error=cast-function-type-strict
+android.cxxflags = -Wno-cast-function-type -Wno-cast-function-type-strict -Wno-error=cast-function-type-strict
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-#android.ndk_path =
+android.ndk_path = ./android-ndk-r26c-linux
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
 #android.sdk_path =
@@ -311,7 +317,11 @@ android.allow_backup = True
 # android.no-byte-compile-python = False
 
 # (str) The format used to package the app for release mode (aab or apk or aar).
-# android.release_artifact = aab
+android.release_artifact = aab
+android.release=1
+android.sign=1
+android.keyalias=firstkey
+android.keystore=mykeystore.keystore
 
 # (str) The format used to package the app for debug mode (apk or aar).
 # android.debug_artifact = apk
@@ -414,10 +424,16 @@ tests/*
 */tests/*
 */test/*
 test/*
+*/clang/*
 */test_*.py
 venv/*
 bin/*
 */test2to3/*
+*/third_party/googletest/scripts/*
+*.mp4
+*.zip
+docs/
+__pycache__/
 
 [buildozer]
 
