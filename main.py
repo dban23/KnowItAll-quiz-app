@@ -93,13 +93,23 @@ class Quiz_welcome(Screen):
             # valign="middle",
         )
 
-        grid = GridLayout(
-            cols=4,
-            spacing=10,
-            padding=20,
-            size_hint=(0.8, 0.1),
-            pos_hint={"center_x": 0.5},
-        )
+
+        if platform == 'android':
+            grid = GridLayout(
+                rows=4,
+                spacing=20,
+                padding=20,
+                size_hint=(0.8, 0.3),
+                pos_hint={"center_x": 0.5},
+            )
+        else:
+             grid = GridLayout(
+                cols=4,
+                spacing=10,
+                padding=20,
+                size_hint=(0.8, 0.1),
+                pos_hint={"center_x": 0.5},
+            )           
 
         self.categories = {
             "Sport": 21,
@@ -121,7 +131,7 @@ class Quiz_welcome(Screen):
         self.start_button = Button(
             text="Start quiz",
             font_size=self.get_font_size(),
-            size_hint=(0.3, 0.12),
+            size_hint=self.get_button_size(),
             pos_hint={"center_x": 0.5},
             background_normal="",
             background_color=green,
@@ -153,14 +163,14 @@ class Quiz_welcome(Screen):
 
     def get_button_size(self):
         if platform == "android":
-            return (w * 0.2, h * 0.1)
+            return (0.4, 0.12)
         else:
-            return (w * 0.15, h * 0.08)
+            return (0.3, 0.12)
 
     def on_cat_click(self, instance):
         selected = instance.text
         self.start_button.text = f"Start quiz on {selected}"
-        self.start_button.size_hint = (0.4, 0.12)
+        self.start_button.size_hint = (0.5, 0.12)
     
         # check if token already exists and if it's older than 6 hours
         def check_token():
@@ -211,13 +221,23 @@ class Quiz_questions(Screen):
         self.total_points = 0
         self.current_index = 0
         self.master = BoxLayout(orientation="vertical", spacing=1, padding=60)
-        self.q_grid = GridLayout(
-            cols=2,
-            spacing=50,
-            padding=30,
-            size_hint=(0.8, 0.2),
-            pos_hint={"top": 0.5, "center_x": 0.5},
-        )
+        
+        if platform == 'android':
+            self.q_grid = GridLayout(
+                rows=4,
+                spacing=50,
+                padding=20,
+                size_hint=(0.8, 0.3),
+                pos_hint={"top": 0.5, "center_x": 0.5},
+            )
+        else:
+            self.q_grid = GridLayout(
+                cols=2,
+                spacing=50,
+                padding=30,
+                size_hint=(0.8, 0.2),
+                pos_hint={"top": 0.5, "center_x": 0.5},
+            )
 
         self.add_widget(self.master)
 
