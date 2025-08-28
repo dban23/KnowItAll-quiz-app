@@ -9,16 +9,16 @@ In short, it fetches live trivia questions from the Open Trivia Database API, of
 
 ### File overview:
     - KNOWITALL.png -> logo of the app used on the GUI
-    - project.py -> main application source code
+    - main.py -> main application source code
     - README.md -> the file you're (hopefully) reading
     - requirements.txt -> all pip-installable libraries required for the app
     - test_project.py -> code used for validation of the core functions
 
 ### Let's dive in!
-As previously said, after running the app, the first thing you can see in the terminal is the app name written in ASCII art. It's just a small fun addition to start the project. After that, the main app screen will be opened. On that screen, you'll see several widgets that are, as already written, made with the Kivy framework.
+After running the main.py code, the main app screen will be opened. On that screen, you'll see several widgets that are, as already written, made with the Kivy framework.
 
 #### *Welcome screen*
-From the top, there is an app logo, "Select category" label along with the four buttons used to choose the said categories, and at the bottom there is a "Start quiz" button. Once a category is selected, the Start Quiz button updates to read:
+From the top, there is an app logo, "Select category" label along with the four buttons used to choose the said categories, and at the bottom there is a "Start quiz" button. The layout of the buttons depend wether you are on a mobile phone or desktop. The layout can be either 2x2 or 4x1. Once a category is selected, the Start Quiz button updates to read:
 >"Start quiz on {category}".
 
 App currently lets you choose between only 4 categories: Sport, Music, History and Politics. The plan is to eventually update this with more categories to choose, maybe in the form of a drop-down menu.
@@ -28,9 +28,9 @@ One thing that the first screen currently doesn't have is a widget to choose the
 Clicking the button "Start quiz on {category}", the app will lead you to the second screen where the questions are given.
 
 #### *Questions screen*
-The second screen also includes several widgets: the number of the question you're answering to, the question itself and the 4 possible answers, from which only one is correct.
+The second screen also includes several widgets: the number of the question you're answering to, the question itself and the 4 possible answers, from which only one is correct. As with the categories buttons, the layout of the answer buttons depend on the platform you're on. And the idea of the layout is the same. Mobile phones will get 4 answers one under the other, while the desktop users will get 2x2 grid.
 
-After the user clicks the answer which he thinks is correct, a new question and set of answers will appear — all widgets are dynamically updated when a choice is made.
+After the user clicks the answer which he thinks is correct, the button will either become green or red - depending if you answered it correctly, and a new question and set of answers will appear — all widgets are dynamically updated when a choice is made.
 
 The quiz itself consists of 10 questions and after the last question is answered, the user will see the final screen where the total score will be shown:
 >("eg. Your total score is 5/10!")
@@ -40,7 +40,7 @@ At the bottom of the screen user will see a "Play again" button that, when click
 ### Source code
 
 #### *main() and three custom functions*
-At the start of the code, after importing all of the needed libraries, there is a *main function* whose purpose in life is to print out ASCII art in the terminal and, more importantly, to run the QuizApp.
+At the start of the code, after importing all of the needed libraries, there is a *main function* whose purpose in life is to run the QuizApp.
 
 After that, there are two functions *get_token* and *get_questions*. They, with the help of the *requests* library (GET requests), fetch the token and questions needed in the later stage of the code. The former is fairly simple but important so that no questions are repeated for the user and the latter is a bit more complicated.
 
@@ -53,7 +53,7 @@ Second, longer and more complicated part of the code, consists of three classes.
 
 The first class is responsible for the creation of the welcome screen and all widgets that are on there. In there, you can find the hardcoded number of questions variable and two special methods:
 
-    - on_cat_click -> defines what happens after user clicks one of the category button
+    - on_cat_click -> defines what happens after user clicks one of the category button. In this function there is also a check_token function that is used to check if the token exists and how old it is if it exists.
 
     - to_next_screen -> defines what happens when user clicks "Start quiz" button. It calls *get_question()*, calls *build_ui()* function from the second class and then takes user to the next screen
 
