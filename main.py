@@ -176,10 +176,13 @@ class Quiz_welcome(Screen):
         def check_token():
             if hasattr(self, "token") and hasattr(self, "token_time"):
                 time_of_check = datetime.now()
-                token_age = time_of_check - token_time
+                token_age = time_of_check - self.token_time
                 if token_age > timedelta(hours=6):
                     token = get_token()
                     token_time = datetime.now()
+                else:
+                    token = self.token
+                    token_time = self.token_time
             else:
                 token = get_token()
                 token_time = datetime.now()
