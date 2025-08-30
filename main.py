@@ -37,6 +37,7 @@ def get_token():
     token_response = requests.get(token_url, timeout=10)
     return token_response.json()["token"]
 
+
 def get_questions(number_of_questions, category, token):
     questions_url = f"https://opentdb.com/api.php?amount={number_of_questions}&category={category}&type=multiple&token={token}"
     response = requests.get(questions_url, timeout=10)
@@ -93,8 +94,7 @@ class Quiz_welcome(Screen):
             # valign="middle",
         )
 
-
-        if platform == 'android':
+        if platform == "android":
             grid = GridLayout(
                 rows=4,
                 spacing=20,
@@ -103,13 +103,13 @@ class Quiz_welcome(Screen):
                 pos_hint={"center_x": 0.5},
             )
         else:
-             grid = GridLayout(
+            grid = GridLayout(
                 cols=4,
                 spacing=10,
                 padding=20,
                 size_hint=(0.8, 0.1),
                 pos_hint={"center_x": 0.5},
-            )           
+            )
 
         self.categories = {
             "Sport": 21,
@@ -171,7 +171,7 @@ class Quiz_welcome(Screen):
         selected = instance.text
         self.start_button.text = f"Start quiz on {selected}"
         self.start_button.size_hint = (0.5, 0.12)
-    
+
         # check if token already exists and if it's older than 6 hours
         def check_token():
             if hasattr(self, "token") and hasattr(self, "token_time"):
@@ -183,13 +183,13 @@ class Quiz_welcome(Screen):
             else:
                 token = get_token()
                 token_time = datetime.now()
-            
+
             Clock.schedule_once(lambda dt: setattr(self, "token", token))
             Clock.schedule_once(lambda dt: setattr(self, "token_time", token_time))
 
         # save the category code so I can use it in the API
         self.selected_category_code = self.categories[selected]
-        
+
         # fetch token in the background thread
         threading.Thread(target=check_token).start()
 
@@ -221,8 +221,8 @@ class Quiz_questions(Screen):
         self.total_points = 0
         self.current_index = 0
         self.master = BoxLayout(orientation="vertical", spacing=1, padding=60)
-        
-        if platform == 'android':
+
+        if platform == "android":
             self.q_grid = GridLayout(
                 rows=4,
                 spacing=50,
@@ -255,7 +255,7 @@ class Quiz_questions(Screen):
             font_size=self.welcome_screen.get_font_size(),
             color=green,
             size_hint=(1, 0.01),
-            #height=h*0.2,
+            # height=h*0.2,
             pos_hint={"top": 0.9, "center_x": 0.5},
             halign="center",
             valign="middle",
@@ -267,7 +267,7 @@ class Quiz_questions(Screen):
             font_size=self.welcome_screen.get_font_size(),
             color=blue,
             size_hint=(1, 0.2),
-            #height=h*0.2,
+            # height=h*0.2,
             pos_hint={"top": 0.8, "center_x": 0.5},
             halign="center",
             valign="middle",
@@ -299,60 +299,67 @@ class Quiz_questions(Screen):
             self.answer_buttons.append(self.btn)
             self.q_grid.add_widget(self.btn)
 
+        self.button_clicked = False
+
     def answer_clicked(self, instance):
         self.welcome_screen = self.manager.get_screen("Welcome screen")
-
         correct_answer = self.current_question_data["correct_answer"]
 
-        if instance.text == correct_answer:
-            self.total_points += 1
-            instance.background_color = light_green
-        elif instance.text != correct_answer:
-            instance.background_color = red
-            for btn in self.answer_buttons:
-                if btn.text == correct_answer:
-                    btn.background_color = light_green
+        if not self.button_clicked:
+            self.button_clicked = True
 
-        self.current_index += 1
-
-        def next_question(dt):
-            if self.current_index >= len(self.welcome_screen.questions_data):
-                self.master.remove_widget(self.q_grid)
-                self.master.remove_widget(self.ques_num)
-                self.question.text = f"Your total score is {self.total_points}/10!"
-                self.play_again = Button(
-                    text="Play again",
-                    font_size=self.welcome_screen.get_font_size(),
-                    background_normal="",
-                    background_color=green,
-                    size_hint=(0.4, 0.05),
-                    #height=100,
-                    pos_hint={"top": 0.45, "center_x": 0.5},
-                    bold=True,
-                    on_release=self.restart_game,
-                )
-                self.master.add_widget(self.play_again)
-                return
-            else:
-                # fetching new data for new questions
-                self.current_question_data = fix_encoding(
-                    self.welcome_screen.questions_data[self.current_index]
-                )
-                self.current_question = fix_encoding(
-                    self.current_question_data["question"]
-                )
-                self.current_answers = self.current_question_data["answers"]
-
-                # updating text for every widget on the page with the current question data
-                for i in range(4):
-                    answer = self.current_answers[i]
-                    self.answer_buttons[i].text = fix_encoding(answer)
-                self.question.text = self.current_question
-                self.ques_num.text = f"Question {self.current_index + 1}"
+            if instance.text == correct_answer:
+                self.total_points += 1
+                instance.background_color = light_green
+            elif instance.text != correct_answer:
+                instance.background_color = red
                 for btn in self.answer_buttons:
-                    btn.background_color = green
+                    if btn.text == correct_answer:
+                        btn.background_color = light_green
 
-        Clock.schedule_once(next_question, 0.8)
+            self.current_index += 1
+
+            def next_question(dt):
+                if self.current_index >= len(self.welcome_screen.questions_data):
+                    self.master.remove_widget(self.q_grid)
+                    self.master.remove_widget(self.ques_num)
+                    self.question.text = f"Your total score is {self.total_points}/10!"
+                    self.play_again = Button(
+                        text="Play again",
+                        font_size=self.welcome_screen.get_font_size(),
+                        background_normal="",
+                        background_color=green,
+                        size_hint=(0.4, 0.05),
+                        # height=100,
+                        pos_hint={"top": 0.45, "center_x": 0.5},
+                        bold=True,
+                        on_release=self.restart_game,
+                    )
+                    self.master.add_widget(self.play_again)
+                    return
+                else:
+                    self.button_clicked = False
+                    # fetching new data for new questions
+                    self.current_question_data = fix_encoding(
+                        self.welcome_screen.questions_data[self.current_index]
+                    )
+                    self.current_question = fix_encoding(
+                        self.current_question_data["question"]
+                    )
+                    self.current_answers = self.current_question_data["answers"]
+
+                    # updating text for every widget on the page with the current question data
+                    for i in range(4):
+                        answer = self.current_answers[i]
+                        self.answer_buttons[i].text = fix_encoding(answer)
+                    self.question.text = self.current_question
+                    self.ques_num.text = f"Question {self.current_index + 1}"
+                    for btn in self.answer_buttons:
+                        btn.background_color = green
+
+            Clock.schedule_once(next_question, 0.8)
+        else:
+            pass
 
     def restart_game(self, instance):
         self.total_points = 0
