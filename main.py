@@ -170,7 +170,7 @@ class Quiz_welcome(Screen):
     def on_cat_click(self, instance):
         selected = instance.text
         self.start_button.text = f"Start quiz on {selected}"
-        self.start_button.size_hint = (0.5, 0.12)
+        self.start_button.size_hint = (0.6, 0.12)
 
         # check if token already exists and if it's older than 6 hours
         def check_token():
@@ -293,7 +293,7 @@ class Quiz_questions(Screen):
         for answer in self.current_answers:
             self.btn = Button(
                 text=fix_encoding(answer),
-                font_size=30,
+                font_size=self.welcome_screen.get_font_size(),
                 background_normal="",
                 background_color=green,
                 bold=False,
@@ -332,8 +332,7 @@ class Quiz_questions(Screen):
                         font_size=self.welcome_screen.get_font_size(),
                         background_normal="",
                         background_color=green,
-                        size_hint=(0.4, 0.05),
-                        # height=100,
+                        size_hint=self.welcome_screen.get_button_size(),
                         pos_hint={"top": 0.45, "center_x": 0.5},
                         bold=True,
                         on_release=self.restart_game,

@@ -35,7 +35,7 @@ source.exclude_patterns = *.mp4, *.zip, *.tar, *.tgz, *.wav, *.ogg, *.ttf, *.pdf
 #license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 1.0
+version = 2.0
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
